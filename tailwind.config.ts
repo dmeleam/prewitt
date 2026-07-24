@@ -14,8 +14,8 @@ export default {
         stamp: "#993C1D", // used sparingly, e.g. "unsaved changes" indicator
       },
       fontFamily: {
-        sans: ["var(--font-body)", "system-ui", "sans-serif"],
-        display: ["var(--font-display)", "system-ui", "sans-serif"],
+        sans: ["-apple-system", "BlinkMacSystemFont", "Segoe UI", "system-ui", "sans-serif"],
+        display: ["Georgia", "Iowan Old Style", "Times New Roman", "serif"],
       },
       borderRadius: {
         DEFAULT: "6px",
