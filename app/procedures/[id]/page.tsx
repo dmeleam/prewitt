@@ -1,0 +1,34 @@
+import { createClient } from "@/lib/supabase/server";
+import ProcedureEditor from "@/components/ProcedureEditor";
+import { notFound } from "next/navigation";
+
+export default async function ProcedurePage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const supabase = createClient();
+
+  const { data: procedure } = await supabase
+    .from("procedures")
+    .select("id, title, content")
+    .eq("id", params.id)
+    .single();
+
+  if (!procedure) notFound();
+
+  const { data: versions } = await supabase
+    .from("procedure_versions")
+    .select("id, content, edited_at, profiles(full_name)")
+    .eq("procedure_id", params.id)
+    .order("edited_at", { ascending: false });
+
+  return (
+    <ProcedureEditor
+      procedureId={procedure.id}
+      title={procedure.title}
+      content={procedure.content}
+      versions={(versions as any) ?? []}
+    />
+  );
+}
