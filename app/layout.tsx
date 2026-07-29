@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="border-b border-line bg-paper">
           <div className="max-w-3xl mx-auto px-6 py-3 flex items-center justify-between">
             <a href="/" className="flex items-center gap-3">
-              <img src="/logo.jpeg" alt="The Prewitt Group" className="h-12 w-auto" />
+              <img src="/logo.png" alt="The Prewitt Group" className="h-12 w-auto" />
               <span className="font-display font-semibold text-lg text-ink hidden sm:inline">Procedures</span>
             </a>
             <a href="/procedures/new" className="text-sm text-accent hover:underline">+ Add procedure</a>
