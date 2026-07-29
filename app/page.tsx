@@ -1,14 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import SearchBar from "@/components/SearchBar";
 import ProcedureCard from "@/components/ProcedureCard";
-import ProcedureIndex from "@/components/ProcedureIndex";
 
 function slugify(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 }
 
-export default async function HomePage({ searchParams }: { searchParams: { q?: string } }) {
+export default async function HomePage({ searchParams }: { searchParams: { q?: string; category?: string } }) {
   const q = searchParams.q ?? "";
+  const categorySlug = searchParams.category ?? "";
   const supabase = createClient();
 
   if (q) {
@@ -34,27 +34,62 @@ export default async function HomePage({ searchParams }: { searchParams: { q?: s
     );
   }
 
-  const { data: procedures, error } = await supabase
-    .from("procedures")
-    .select("id, title, categories(name)")
-    .order("title", { ascending: true });
+  if (categorySlug) {
+    const { data: allCategories } = await supabase.from("categories").select("id, name");
+    const match = allCategories?.find((c) => slugify(c.name) === categorySlug);
 
-  const groupMap = new Map<string, { id: string; title: string }[]>();
-  procedures?.forEach((p: any) => {
-    const name = p.categories?.name ?? "Uncategorized";
-    if (!groupMap.has(name)) groupMap.set(name, []);
-    groupMap.get(name)!.push({ id: p.id, title: p.title });
+    if (!match) {
+      return (
+        <div>
+          <SearchBar initialValue={q} />
+          <p className="text-sm text-ink-soft mt-6">Category not found. <a href="/" className="text-accent hover:underline">Back to all categories</a></p>
+        </div>
+      );
+    }
+
+    const { data: procedures, error } = await supabase
+      .from("procedures")
+      .select("id, title, content, updated_at, categories(name)")
+      .eq("category_id", match.id)
+      .order("title", { ascending: true });
+
+    return (
+      <div>
+        <SearchBar initialValue={q} />
+        <div className="mt-6 mb-4 flex items-center justify-between">
+          <h1 className="font-display text-xl font-semibold text-ink">{match.name}</h1>
+          <a href="/" className="text-sm text-accent hover:underline">All categories</a>
+        </div>
+        {error && <p className="text-sm text-stamp">Couldn't load procedures: {error.message}</p>}
+        <div className="space-y-3">
+          {procedures && procedures.length === 0 && <p className="text-sm text-ink-soft">No procedures in this category yet.</p>}
+          {procedures?.map((p: any) => (
+            <ProcedureCard key={p.id} id={p.id} title={p.title} categoryName={p.categories?.name ?? null} snippet={p.content.slice(0, 160)} updatedAt={p.updated_at} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const { data: categories } = await supabase.from("categories").select("id, name").order("name");
+  const { data: procedures } = await supabase.from("procedures").select("category_id");
+
+  const counts = new Map<string, number>();
+  procedures?.forEach((p) => {
+    if (p.category_id) counts.set(p.category_id, (counts.get(p.category_id) ?? 0) + 1);
   });
-
-  const groups = Array.from(groupMap.entries())
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([categoryName, procs]) => ({ categoryName, slug: slugify(categoryName), procedures: procs }));
 
   return (
     <div>
       <SearchBar initialValue={q} />
-      {error && <p className="text-sm text-stamp mt-4">Couldn't load procedures: {error.message}</p>}
-      <ProcedureIndex groups={groups} />
+      <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {categories?.map((c) => (
+          <a key={c.id} href={`/?category=${slugify(c.name)}`} className="border border-line rounded p-4 bg-white hover:border-accent transition-colors text-center">
+            <div className="font-display font-semibold text-ink">{c.name}</div>
+            <div className="text-xs text-ink-soft mt-1">{counts.get(c.id) ?? 0} procedures</div>
+          </a>
+        ))}
+      </div>
     </div>
   );
 }

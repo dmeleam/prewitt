@@ -32,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <nav className="max-w-3xl mx-auto px-6 py-2 flex items-center gap-x-4 gap-y-1 flex-wrap text-sm">
             <a href="/" className="text-ink-soft hover:text-accent font-medium">All procedures</a>
             {categories?.map((c) => (
-              <a key={c.name} href={`/#${slugify(c.name)}`} className="text-ink-soft hover:text-accent">{c.name}</a>
+              <a key={c.name} href={`/?category=${slugify(c.name)}`} className="text-ink-soft hover:text-accent">{c.name}</a>
             ))}
           </nav>
         </div>
