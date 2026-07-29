@@ -9,8 +9,8 @@ export default {
         ink: "#1B2430",
         "ink-soft": "#4A5568",
         line: "#DCD9D0",
-        accent: "#0F6E56", // deep teal — trust + "verified" without being a stock blue
-        "accent-soft": "#E1F5EE",
+        accent: "#346296", // The Prewitt Group brand blue, sampled from the logo
+        "accent-soft": "#E7ECF2",
         stamp: "#993C1D", // used sparingly, e.g. "unsaved changes" indicator
       },
       fontFamily: {

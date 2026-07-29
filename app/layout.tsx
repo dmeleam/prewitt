@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Agency Procedures",
-  description: "Searchable procedures and onboarding for the agency",
+  title: "The Prewitt Group — Procedures",
+  description: "Searchable procedures and onboarding for The Prewitt Group",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -11,8 +11,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="font-sans min-h-screen">
         <header className="border-b border-line bg-paper">
-          <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="/" className="font-display font-semibold text-lg text-ink">Agency Procedures</a>
+          <div className="max-w-3xl mx-auto px-6 py-3 flex items-center justify-between">
+            <a href="/" className="flex items-center gap-3">
+              <img src="/logo.jpeg" alt="The Prewitt Group" className="h-12 w-auto" />
+              <span className="font-display font-semibold text-lg text-ink hidden sm:inline">Procedures</span>
+            </a>
             <a href="/procedures/new" className="text-sm text-accent hover:underline">+ Add procedure</a>
           </div>
         </header>
