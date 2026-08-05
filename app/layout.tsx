@@ -12,6 +12,13 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
   const { data: categories } = await supabase.from("categories").select("id, name").order("name");
+  const { data: procedureCategoryIds } = await supabase.from("procedures").select("category_id");
+
+  const counts: Record<string, number> = {};
+  procedureCategoryIds?.forEach((p) => {
+    if (p.category_id) counts[p.category_id] = (counts[p.category_id] ?? 0) + 1;
+  });
+  const totalCount = procedureCategoryIds?.length ?? 0;
 
   return (
     <html lang="en">
@@ -25,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
         <div className="max-w-5xl mx-auto md:flex md:items-start">
           <Suspense fallback={<div className="hidden md:block w-48 shrink-0" />}>
-            <Sidebar categories={categories ?? []} />
+            <Sidebar categories={categories ?? []} counts={counts} totalCount={totalCount} />
           </Suspense>
           <main className="flex-1 min-w-0 px-6 py-8">{children}</main>
         </div>
