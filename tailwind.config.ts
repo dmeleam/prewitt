@@ -9,7 +9,7 @@ export default {
         ink: "#1B2430",
         "ink-soft": "#4A5568",
         line: "#DCD9D0",
-        accent: "#346296", // The Prewitt Group brand blue, sampled from the logo
+        accent: "#5D81AB", // lightened Prewitt blue
         "accent-soft": "#E7ECF2",
         stamp: "#993C1D", // used sparingly, e.g. "unsaved changes" indicator
       },
