@@ -22,14 +22,61 @@ type Props = {
   versions: Version[];
 };
 
+const IMAGE_LINE = /^!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)$/;
+
+function renderBody(content: string) {
+  const lines = content.split("\n");
+  const blocks: JSX.Element[] = [];
+  let buffer: string[] = [];
+  let key = 0;
+
+  const flush = () => {
+    if (buffer.length > 0) {
+      blocks.push(<p key={key++} className="text-ink whitespace-pre-wrap leading-relaxed mb-4">{buffer.join("\n")}</p>);
+      buffer = [];
+    }
+  };
+
+  lines.forEach((line) => {
+    const match = line.match(IMAGE_LINE);
+    if (match) {
+      flush();
+      blocks.push(<img key={key++} src={match[2]} alt={match[1] || "Procedure screenshot"} className="rounded border border-line my-4 max-w-full" />);
+    } else {
+      buffer.push(line);
+    }
+  });
+  flush();
+  return blocks;
+}
+
 export default function ProcedureEditor({ procedureId, title, content, categoryId, categories, versions }: Props) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(content);
   const [category, setCategory] = useState(categoryId ?? "");
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const router = useRouter();
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const supabase = createClient();
+    const path = `${procedureId}/${Date.now()}-${file.name}`;
+    const { error: uploadError } = await supabase.storage.from("procedure-images").upload(path, file);
+    if (uploadError) {
+      alert("Upload failed: " + uploadError.message);
+      setUploading(false);
+      return;
+    }
+    const { data } = supabase.storage.from("procedure-images").getPublicUrl(path);
+    setDraft((prev) => prev + `\n\n![Screenshot](${data.publicUrl})\n`);
+    setUploading(false);
+    e.target.value = "";
+  }
 
   async function handleSave() {
     setSaving(true);
@@ -95,13 +142,21 @@ export default function ProcedureEditor({ procedureId, title, content, categoryI
           <label className="block text-sm text-ink-soft mb-1">Procedure</label>
           <textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={16} className="w-full border border-line rounded p-4 text-sm bg-white font-sans leading-relaxed" />
 
+          <div className="flex items-center gap-3 mt-3">
+            <label className="text-sm text-accent hover:underline cursor-pointer">
+              {uploading ? "Uploading..." : "+ Add screenshot"}
+              <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} className="hidden" />
+            </label>
+            <span className="text-xs text-ink-soft">Uploads and inserts the image into the text above.</span>
+          </div>
+
           <div className="flex gap-3 mt-3">
             <button onClick={handleSave} disabled={saving} className="bg-accent text-paper rounded px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50">{saving ? "Saving..." : "Save changes"}</button>
             <button onClick={() => { setDraft(content); setCategory(categoryId ?? ""); setEditing(false); }} className="text-sm text-ink-soft hover:underline">Cancel</button>
           </div>
         </div>
       ) : (
-        <p className="text-ink whitespace-pre-wrap leading-relaxed">{content}</p>
+        <div>{renderBody(content)}</div>
       )}
 
       <div className="mt-8 pt-6 border-t border-line">
