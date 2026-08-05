@@ -41,7 +41,11 @@ function renderBody(content: string) {
     const match = line.match(IMAGE_LINE);
     if (match) {
       flush();
-      blocks.push(<img key={key++} src={match[2]} alt={match[1] || "Procedure screenshot"} className="rounded border border-line my-4 max-w-full" />);
+      blocks.push(
+        <a key={key++} href={match[2]} target="_blank" rel="noopener noreferrer" className="block my-4">
+          <img src={match[2]} alt={match[1] || "Procedure screenshot"} className="rounded border border-line max-h-[420px] w-auto object-contain cursor-zoom-in hover:opacity-90" />
+        </a>
+      );
     } else {
       buffer.push(line);
     }
