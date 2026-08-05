@@ -19,7 +19,7 @@ export default function Sidebar({ categories, counts, totalCount }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeCategory = searchParams.get("category");
-  const isHome = pathname === "/" && !activeCategory;
+  const isAllProcedures = pathname === "/procedures";
   const [open, setOpen] = useState(false);
 
   function linkClass(active: boolean) {
@@ -31,7 +31,7 @@ export default function Sidebar({ categories, counts, totalCount }: Props) {
   function renderLinks() {
     return (
       <>
-        <a href="/" className={linkClass(isHome)}>
+        <a href="/procedures" className={linkClass(isAllProcedures)}>
           <span>All procedures</span>
           <span className="text-xs text-ink-soft">{totalCount}</span>
         </a>
