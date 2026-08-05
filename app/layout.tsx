@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
+import Sidebar from "@/components/Sidebar";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "The Prewitt Group — Procedures",
   description: "Searchable procedures and onboarding for The Prewitt Group",
 };
-
-function slugify(name: string) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
@@ -25,16 +23,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
         </header>
 
-        <div className="max-w-5xl mx-auto flex items-start">
-          <aside className="w-48 shrink-0 border-r border-line px-4 py-8 sticky top-0">
-            <p className="text-xs text-ink-soft uppercase tracking-wide mb-3">Categories</p>
-            <nav className="flex flex-col gap-1">
-              <a href="/" className="text-sm rounded px-2 py-1.5 bg-accent-soft text-accent font-medium">All procedures</a>
-              {categories?.map((c) => (
-                <a key={c.id} href={`/?category=${slugify(c.name)}`} className="text-sm rounded px-2 py-1.5 text-ink-soft hover:bg-accent-soft hover:text-accent">{c.name}</a>
-              ))}
-            </nav>
-          </aside>
+        <div className="max-w-5xl mx-auto md:flex md:items-start">
+          <Suspense fallback={<div className="hidden md:block w-48 shrink-0" />}>
+            <Sidebar categories={categories ?? []} />
+          </Suspense>
           <main className="flex-1 min-w-0 px-6 py-8">{children}</main>
         </div>
       </body>
