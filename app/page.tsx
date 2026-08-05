@@ -71,10 +71,24 @@ export default async function HomePage({ searchParams }: { searchParams: { q?: s
     );
   }
 
+  const { data: recent } = await supabase
+    .from("procedures")
+    .select("id, title, content, updated_at, categories(name)")
+    .order("updated_at", { ascending: false })
+    .limit(6);
+
   return (
     <div>
       <SearchBar initialValue={q} />
-      <p className="text-sm text-ink-soft mt-6">Search for a procedure above, or pick a category from the sidebar.</p>
+      <p className="text-xs text-ink-soft uppercase tracking-wide mt-8 mb-3">Recently updated</p>
+      <div className="space-y-3">
+        {recent && recent.length === 0 && (
+          <p className="text-sm text-ink-soft">No procedures yet. Pick a category from the sidebar or add the first one.</p>
+        )}
+        {recent?.map((p: any) => (
+          <ProcedureCard key={p.id} id={p.id} title={p.title} categoryName={p.categories?.name ?? null} snippet={p.content.slice(0, 160)} updatedAt={p.updated_at} />
+        ))}
+      </div>
     </div>
   );
 }
