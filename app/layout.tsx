@@ -18,19 +18,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body className="font-sans min-h-screen">
-        <header className="border-b border-line bg-paper">
-          <div className="max-w-3xl mx-auto px-6 py-3 flex items-center justify-between">
-            <a href="/" className="flex items-center gap-3">
-              <img src="/logo.png" alt="The Prewitt Group" className="h-14 w-auto" />
-              <span className="font-display font-semibold text-lg text-ink hidden sm:inline">Procedures</span>
-            </a>
-            <a href="/procedures/new" className="text-sm text-accent hover:underline">+ Add procedure</a>
+        <header className="border-b-2 border-accent bg-ink">
+          <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="/" className="font-display font-semibold text-xl text-paper tracking-tight">The Prewitt Group</a>
+            <a href="/procedures/new" className="text-sm text-paper hover:text-accent-soft border border-paper hover:border-accent-soft rounded px-3 py-1.5">+ Add procedure</a>
           </div>
         </header>
 
-        <div className="border-b border-line bg-white">
+        <div className="border-b border-line bg-accent-soft">
           <nav className="max-w-3xl mx-auto px-6 py-2 flex items-center gap-x-4 gap-y-1 flex-wrap text-sm">
-            <a href="/" className="text-ink-soft hover:text-accent font-medium">All procedures</a>
+            <a href="/" className="text-accent hover:underline font-semibold">All procedures</a>
             {categories?.map((c) => (
               <a key={c.name} href={`/?category=${slugify(c.name)}`} className="text-ink-soft hover:text-accent">{c.name}</a>
             ))}

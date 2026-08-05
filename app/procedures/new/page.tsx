@@ -114,7 +114,7 @@ export default function NewProcedurePage() {
         <button
           type="submit"
           disabled={saving}
-          className="bg-ink text-paper rounded px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50"
+          className="bg-accent text-paper rounded px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50"
         >
           {saving ? "Saving..." : "Save procedure"}
         </button>

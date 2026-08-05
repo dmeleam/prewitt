@@ -48,7 +48,7 @@ export default function LoginPage() {
           />
           <button
             type="submit"
-            className="w-full bg-ink text-paper rounded px-3 py-2 text-sm font-medium hover:opacity-90"
+            className="w-full bg-accent text-paper rounded px-3 py-2 text-sm font-medium hover:opacity-90"
           >
             Send sign-in link
           </button>

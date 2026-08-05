@@ -84,7 +84,7 @@ export default async function HomePage({ searchParams }: { searchParams: { q?: s
       <SearchBar initialValue={q} />
       <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3">
         {categories?.map((c) => (
-          <a key={c.id} href={`/?category=${slugify(c.name)}`} className="border border-line rounded p-4 bg-white hover:border-accent transition-colors text-center">
+          <a key={c.id} href={`/?category=${slugify(c.name)}`} className="border border-accent/30 rounded p-4 bg-accent-soft hover:border-accent transition-colors text-center">
             <div className="font-display font-semibold text-ink">{c.name}</div>
             <div className="text-xs text-ink-soft mt-1">{counts.get(c.id) ?? 0} procedures</div>
           </a>

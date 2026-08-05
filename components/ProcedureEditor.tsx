@@ -96,7 +96,7 @@ export default function ProcedureEditor({ procedureId, title, content, categoryI
           <textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={16} className="w-full border border-line rounded p-4 text-sm bg-white font-sans leading-relaxed" />
 
           <div className="flex gap-3 mt-3">
-            <button onClick={handleSave} disabled={saving} className="bg-ink text-paper rounded px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50">{saving ? "Saving..." : "Save changes"}</button>
+            <button onClick={handleSave} disabled={saving} className="bg-accent text-paper rounded px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50">{saving ? "Saving..." : "Save changes"}</button>
             <button onClick={() => { setDraft(content); setCategory(categoryId ?? ""); setEditing(false); }} className="text-sm text-ink-soft hover:underline">Cancel</button>
           </div>
         </div>
