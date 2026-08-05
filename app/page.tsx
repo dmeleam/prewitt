@@ -71,25 +71,10 @@ export default async function HomePage({ searchParams }: { searchParams: { q?: s
     );
   }
 
-  const { data: categories } = await supabase.from("categories").select("id, name").order("name");
-  const { data: procedures } = await supabase.from("procedures").select("category_id");
-
-  const counts = new Map<string, number>();
-  procedures?.forEach((p) => {
-    if (p.category_id) counts.set(p.category_id, (counts.get(p.category_id) ?? 0) + 1);
-  });
-
   return (
     <div>
       <SearchBar initialValue={q} />
-      <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {categories?.map((c) => (
-          <a key={c.id} href={`/?category=${slugify(c.name)}`} className="border border-accent/30 rounded p-4 bg-accent-soft hover:border-accent transition-colors text-center">
-            <div className="font-display font-semibold text-ink">{c.name}</div>
-            <div className="text-xs text-ink-soft mt-1">{counts.get(c.id) ?? 0} procedures</div>
-          </a>
-        ))}
-      </div>
+      <p className="text-sm text-ink-soft mt-6">Search for a procedure above, or pick a category from the sidebar.</p>
     </div>
   );
 }
