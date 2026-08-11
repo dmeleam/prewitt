@@ -18,6 +18,7 @@ type Props = {
   title: string;
   content: string;
   categoryId: string | null;
+  akaTerms: string | null;
   categories: Category[];
   versions: Version[];
   isAdmin: boolean;
@@ -55,15 +56,23 @@ function renderBody(content: string) {
   return blocks;
 }
 
-export default function ProcedureEditor({ procedureId, title, content, categoryId, categories, versions, isAdmin }: Props) {
+export default function ProcedureEditor({ procedureId, title, content, categoryId, akaTerms, categories, versions, isAdmin }: Props) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(content);
   const [category, setCategory] = useState(categoryId ?? "");
+  const [terms, setTerms] = useState(akaTerms ?? "");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const router = useRouter();
+
+  function resetDraft() {
+    setDraft(content);
+    setCategory(categoryId ?? "");
+    setTerms(akaTerms ?? "");
+    setEditing(false);
+  }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -92,6 +101,7 @@ export default function ProcedureEditor({ procedureId, title, content, categoryI
     const { error: updateError } = await supabase.from("procedures").update({
       content: draft,
       category_id: category || null,
+      aka_terms: terms.trim() || null,
       updated_at: new Date().toISOString(),
     }).eq("id", procedureId);
 
@@ -122,7 +132,7 @@ export default function ProcedureEditor({ procedureId, title, content, categoryI
       setDeleting(false);
       return;
     }
-    router.push("/");
+    router.push("/procedures");
     router.refresh();
   }
 
@@ -148,6 +158,10 @@ export default function ProcedureEditor({ procedureId, title, content, categoryI
             ))}
           </select>
 
+          <label className="block text-sm text-ink-soft mb-1">Alternate search terms</label>
+          <input value={terms} onChange={(e) => setTerms(e.target.value)} placeholder="e.g. NOC, non-renewal, cancellation letter" className="w-full border border-line rounded px-3 py-2 text-sm bg-white" />
+          <p className="text-xs text-ink-soft mt-1 mb-4">Other words a coworker might search for instead of the title.</p>
+
           <label className="block text-sm text-ink-soft mb-1">Procedure</label>
           <textarea value={draft} onChange={(e) => setDraft(e.target.value)} rows={16} className="w-full border border-line rounded p-4 text-sm bg-white font-sans leading-relaxed" />
 
@@ -161,7 +175,7 @@ export default function ProcedureEditor({ procedureId, title, content, categoryI
 
           <div className="flex gap-3 mt-3">
             <button onClick={handleSave} disabled={saving} className="bg-accent text-paper rounded px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50">{saving ? "Saving..." : "Save changes"}</button>
-            <button onClick={() => { setDraft(content); setCategory(categoryId ?? ""); setEditing(false); }} className="text-sm text-ink-soft hover:underline">Cancel</button>
+            <button onClick={resetDraft} className="text-sm text-ink-soft hover:underline">Cancel</button>
           </div>
         </div>
       ) : (

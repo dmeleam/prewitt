@@ -9,7 +9,7 @@ export default async function ProcedurePage({ params }: { params: { id: string }
 
   const { data: procedure } = await supabase
     .from("procedures")
-    .select("id, title, content, category_id")
+    .select("id, title, content, category_id, aka_terms")
     .eq("id", params.id)
     .single();
 
@@ -29,6 +29,7 @@ export default async function ProcedurePage({ params }: { params: { id: string }
       title={procedure.title}
       content={procedure.content}
       categoryId={procedure.category_id}
+      akaTerms={procedure.aka_terms}
       categories={categories ?? []}
       versions={(versions as any) ?? []}
       isAdmin={isAdmin}
