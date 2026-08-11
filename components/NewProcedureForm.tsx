@@ -33,8 +33,9 @@ export default function NewProcedureForm() {
       setUploading(false);
       return;
     }
-    const { data } = supabase.storage.from("procedure-images").getPublicUrl(path);
-    setContent((prev) => prev + `\n\n![Screenshot](${data.publicUrl})\n`);
+    // Bare storage path — the bucket is private, so the page mints a
+    // signed URL when rendering.
+    setContent((prev) => prev + `\n\n![Screenshot](${path})\n`);
     setUploading(false);
     e.target.value = "";
   }
@@ -50,7 +51,7 @@ export default function NewProcedureForm() {
       .insert({
         title,
         content,
-        aka_terms: akaTerms || null,
+        aka_terms: akaTerms.trim() || null,
         category_id: categoryId || null,
         created_by: user?.id,
       })

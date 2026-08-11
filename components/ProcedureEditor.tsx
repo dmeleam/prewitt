@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { IMAGE_LINE } from "@/lib/images";
 
 type Version = {
   id: string;
@@ -22,11 +23,10 @@ type Props = {
   categories: Category[];
   versions: Version[];
   isAdmin: boolean;
+  imageUrls: Record<string, string>;
 };
 
-const IMAGE_LINE = /^!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)$/;
-
-function renderBody(content: string) {
+function renderBody(content: string, imageUrls: Record<string, string>) {
   const lines = content.split("\n");
   const blocks: JSX.Element[] = [];
   let buffer: string[] = [];
@@ -40,14 +40,23 @@ function renderBody(content: string) {
   };
 
   lines.forEach((line) => {
-    const match = line.match(IMAGE_LINE);
+    const match = line.trim().match(IMAGE_LINE);
     if (match) {
       flush();
-      blocks.push(
-        <a key={key++} href={match[2]} target="_blank" rel="noopener noreferrer" className="block my-4">
-          <img src={match[2]} alt={match[1] || "Procedure screenshot"} className="rounded border border-line max-h-[420px] w-auto object-contain cursor-zoom-in hover:opacity-90" />
-        </a>
-      );
+      const target = match[2];
+      // Bare storage paths get a signed URL from the server; a full URL is
+      // legacy content from before the bucket was made private.
+      const src = imageUrls[target] ?? (/^https?:\/\//.test(target) ? target : null);
+
+      if (src) {
+        blocks.push(
+          <a key={key++} href={src} target="_blank" rel="noopener noreferrer" className="block my-4">
+            <img src={src} alt={match[1] || "Procedure screenshot"} className="rounded border border-line max-h-[420px] w-auto object-contain cursor-zoom-in hover:opacity-90" />
+          </a>
+        );
+      } else {
+        blocks.push(<p key={key++} className="text-sm text-ink-soft italic my-4">Screenshot unavailable.</p>);
+      }
     } else {
       buffer.push(line);
     }
@@ -56,7 +65,7 @@ function renderBody(content: string) {
   return blocks;
 }
 
-export default function ProcedureEditor({ procedureId, title, content, categoryId, akaTerms, categories, versions, isAdmin }: Props) {
+export default function ProcedureEditor({ procedureId, title, content, categoryId, akaTerms, categories, versions, isAdmin, imageUrls }: Props) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(content);
   const [category, setCategory] = useState(categoryId ?? "");
@@ -86,8 +95,9 @@ export default function ProcedureEditor({ procedureId, title, content, categoryI
       setUploading(false);
       return;
     }
-    const { data } = supabase.storage.from("procedure-images").getPublicUrl(path);
-    setDraft((prev) => prev + `\n\n![Screenshot](${data.publicUrl})\n`);
+    // Store the bare storage path, not a URL — the bucket is private, so
+    // a signed URL is generated fresh each time the page renders.
+    setDraft((prev) => prev + `\n\n![Screenshot](${path})\n`);
     setUploading(false);
     e.target.value = "";
   }
@@ -179,7 +189,7 @@ export default function ProcedureEditor({ procedureId, title, content, categoryI
           </div>
         </div>
       ) : (
-        <div>{renderBody(content)}</div>
+        <div>{renderBody(content, imageUrls)}</div>
       )}
 
       <div className="mt-8 pt-6 border-t border-line">

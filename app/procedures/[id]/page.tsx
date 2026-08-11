@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { checkIsAdmin } from "@/lib/supabase/admin";
+import { buildSignedUrlMap } from "@/lib/images";
 import ProcedureEditor from "@/components/ProcedureEditor";
 import { notFound } from "next/navigation";
 
@@ -23,6 +24,8 @@ export default async function ProcedurePage({ params }: { params: { id: string }
 
   const { data: categories } = await supabase.from("categories").select("id, name").order("name");
 
+  const imageUrls = await buildSignedUrlMap(supabase, procedure.content);
+
   return (
     <ProcedureEditor
       procedureId={procedure.id}
@@ -33,6 +36,7 @@ export default async function ProcedurePage({ params }: { params: { id: string }
       categories={categories ?? []}
       versions={(versions as any) ?? []}
       isAdmin={isAdmin}
+      imageUrls={imageUrls}
     />
   );
 }
