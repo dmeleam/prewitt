@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { checkIsAdmin } from "@/lib/supabase/admin";
 import Sidebar from "@/components/Sidebar";
 import "./globals.css";
 
@@ -11,6 +12,8 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
+  const isAdmin = await checkIsAdmin(supabase);
+
   const { data: categories } = await supabase.from("categories").select("id, name").order("name");
   const { data: procedureCategoryIds } = await supabase.from("procedures").select("category_id");
 
@@ -26,7 +29,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <header className="border-b-2 border-accent bg-gradient-to-r from-header-blue to-ink">
           <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
             <a href="/" className="font-display font-semibold text-xl text-paper tracking-tight">The Prewitt Group</a>
-            <a href="/procedures/new" className="text-sm text-paper hover:text-accent-soft border border-paper hover:border-accent-soft rounded px-3 py-1.5">+ Add procedure</a>
+            <div className="flex items-center gap-4">
+              {isAdmin && <a href="/admin" className="text-sm text-paper hover:text-accent-soft">Admin</a>}
+              {isAdmin && <a href="/procedures/new" className="text-sm text-paper hover:text-accent-soft border border-paper hover:border-accent-soft rounded px-3 py-1.5">+ Add procedure</a>}
+            </div>
           </div>
         </header>
 

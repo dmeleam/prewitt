@@ -1,9 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
+import { checkIsAdmin } from "@/lib/supabase/admin";
 import ProcedureEditor from "@/components/ProcedureEditor";
 import { notFound } from "next/navigation";
 
 export default async function ProcedurePage({ params }: { params: { id: string } }) {
   const supabase = createClient();
+  const isAdmin = await checkIsAdmin(supabase);
 
   const { data: procedure } = await supabase
     .from("procedures")
@@ -29,6 +31,7 @@ export default async function ProcedurePage({ params }: { params: { id: string }
       categoryId={procedure.category_id}
       categories={categories ?? []}
       versions={(versions as any) ?? []}
+      isAdmin={isAdmin}
     />
   );
 }

@@ -20,6 +20,7 @@ type Props = {
   categoryId: string | null;
   categories: Category[];
   versions: Version[];
+  isAdmin: boolean;
 };
 
 const IMAGE_LINE = /^!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)$/;
@@ -54,7 +55,7 @@ function renderBody(content: string) {
   return blocks;
 }
 
-export default function ProcedureEditor({ procedureId, title, content, categoryId, categories, versions }: Props) {
+export default function ProcedureEditor({ procedureId, title, content, categoryId, categories, versions, isAdmin }: Props) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(content);
   const [category, setCategory] = useState(categoryId ?? "");
@@ -87,14 +88,18 @@ export default function ProcedureEditor({ procedureId, title, content, categoryI
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    await supabase.from("procedure_versions").insert({ procedure_id: procedureId, content, edited_by: user?.id });
-    await supabase.from("procedures").update({
+    const { error: versionError } = await supabase.from("procedure_versions").insert({ procedure_id: procedureId, content, edited_by: user?.id });
+    const { error: updateError } = await supabase.from("procedures").update({
       content: draft,
       category_id: category || null,
       updated_at: new Date().toISOString(),
     }).eq("id", procedureId);
 
     setSaving(false);
+    if (versionError || updateError) {
+      alert("Save failed: " + (versionError?.message || updateError?.message));
+      return;
+    }
     setEditing(false);
     router.refresh();
   }
@@ -125,7 +130,7 @@ export default function ProcedureEditor({ procedureId, title, content, categoryI
     <div>
       <div className="flex items-center justify-between gap-4 mb-4">
         <h1 className="font-display text-2xl font-semibold text-ink">{title}</h1>
-        {!editing && (
+        {isAdmin && !editing && (
           <div className="flex items-center gap-4 shrink-0">
             <button onClick={() => setEditing(true)} className="text-sm text-accent hover:underline">Edit</button>
             <button onClick={handleDelete} disabled={deleting} className="text-sm text-stamp hover:underline disabled:opacity-50">{deleting ? "Deleting..." : "Delete"}</button>
@@ -172,7 +177,7 @@ export default function ProcedureEditor({ procedureId, title, content, categoryI
             {versions.map((v) => (
               <li key={v.id} className="text-sm border border-line rounded p-3 bg-white flex items-center justify-between gap-4">
                 <span className="text-ink-soft">{v.profiles?.full_name ?? "Someone"} — {new Date(v.edited_at).toLocaleString()}</span>
-                <button onClick={() => handleRevert(v.content)} className="text-accent hover:underline shrink-0">Revert to this</button>
+                {isAdmin && <button onClick={() => handleRevert(v.content)} className="text-accent hover:underline shrink-0">Revert to this</button>}
               </li>
             ))}
           </ul>
