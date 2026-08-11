@@ -1,6 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+// Shape of the cookies Supabase hands back for us to write.
+// `options` is loosely typed because Next's cookie options and Supabase's
+// differ slightly between versions; this keeps the build stable either way.
+type CookieToSet = { name: string; value: string; options?: any };
+
 // Used inside server components and route handlers — pages that fetch
 // data before the page ever reaches the browser.
 export function createClient() {
@@ -14,7 +19,7 @@ export function createClient() {
         getAll() {
           return cookieStore.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: CookieToSet[]) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
