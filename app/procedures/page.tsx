@@ -16,7 +16,7 @@ export default async function AllProceduresPage() {
       <div className="space-y-3">
         {procedures && procedures.length === 0 && <p className="text-sm text-ink-soft">No procedures yet.</p>}
         {procedures?.map((p: any) => (
-          <ProcedureCard key={p.id} id={p.id} title={p.title} categoryName={p.categories?.name ?? null} snippet={p.content.slice(0, 160)} updatedAt={p.updated_at} />
+          <ProcedureCard key={p.id} id={p.id} title={p.title} categoryName={p.categories?.name ?? null} snippet={p.content} updatedAt={p.updated_at} />
         ))}
       </div>
     </div>

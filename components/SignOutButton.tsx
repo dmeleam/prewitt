@@ -17,6 +17,6 @@ export default function SignOutButton() {
   }
 
   return (
-    <button onClick={handleSignOut} disabled={signingOut} className="text-sm text-paper hover:text-accent-soft disabled:opacity-50">{signingOut ? "Signing out..." : "Sign out"}</button>
+    <button onClick={handleSignOut} disabled={signingOut} className="text-sm text-paper/70 hover:text-paper disabled:opacity-50">{signingOut ? "Signing out..." : "Sign out"}</button>
   );
 }
