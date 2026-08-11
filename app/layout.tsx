@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { checkIsAdmin } from "@/lib/supabase/admin";
 import Sidebar from "@/components/Sidebar";
+import SignOutButton from "@/components/SignOutButton";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   const isAdmin = await checkIsAdmin(supabase);
 
   const { data: categories } = await supabase.from("categories").select("id, name").order("name");
@@ -32,6 +34,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <div className="flex items-center gap-4">
               {isAdmin && <a href="/admin" className="text-sm text-paper hover:text-accent-soft">Admin</a>}
               {isAdmin && <a href="/procedures/new" className="text-sm text-paper hover:text-accent-soft border border-paper hover:border-accent-soft rounded px-3 py-1.5">+ Add procedure</a>}
+              {user && <SignOutButton />}
             </div>
           </div>
         </header>
