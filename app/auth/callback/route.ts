@@ -8,8 +8,16 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
+    const { error, data } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (!error && data.user?.email) {
+      const { data: isAllowed } = await supabase.rpc("is_email_allowed", { check_email: data.user.email });
+
+      if (!isAllowed) {
+        await supabase.auth.signOut();
+        return NextResponse.redirect(`${origin}/login?error=not_authorized`);
+      }
+
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
