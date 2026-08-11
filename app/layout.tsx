@@ -14,16 +14,25 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const isAdmin = await checkIsAdmin(supabase);
 
-  const { data: categories } = await supabase.from("categories").select("id, name").order("name");
-  const { data: procedureCategoryIds } = await supabase.from("procedures").select("category_id");
+  // Everything below is only fetched and rendered for signed-in users.
+  // Signed out, the page is just the header and the login form.
+  const isAdmin = user ? await checkIsAdmin(supabase) : false;
 
+  let categories: { id: string; name: string }[] = [];
   const counts: Record<string, number> = {};
-  procedureCategoryIds?.forEach((p) => {
-    if (p.category_id) counts[p.category_id] = (counts[p.category_id] ?? 0) + 1;
-  });
-  const totalCount = procedureCategoryIds?.length ?? 0;
+  let totalCount = 0;
+
+  if (user) {
+    const { data: categoryRows } = await supabase.from("categories").select("id, name").order("name");
+    const { data: procedureCategoryIds } = await supabase.from("procedures").select("category_id");
+
+    categories = categoryRows ?? [];
+    procedureCategoryIds?.forEach((p) => {
+      if (p.category_id) counts[p.category_id] = (counts[p.category_id] ?? 0) + 1;
+    });
+    totalCount = procedureCategoryIds?.length ?? 0;
+  }
 
   return (
     <html lang="en">
@@ -48,9 +57,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </header>
 
         <div className="max-w-5xl mx-auto md:flex md:items-start">
-          <Suspense fallback={<div className="hidden md:block w-48 shrink-0" />}>
-            <Sidebar categories={categories ?? []} counts={counts} totalCount={totalCount} />
-          </Suspense>
+          {user && (
+            <Suspense fallback={<div className="hidden md:block w-48 shrink-0" />}>
+              <Sidebar categories={categories} counts={counts} totalCount={totalCount} />
+            </Suspense>
+          )}
           <main className="flex-1 min-w-0 px-6 py-8">{children}</main>
         </div>
       </body>
