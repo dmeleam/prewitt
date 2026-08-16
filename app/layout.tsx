@@ -36,9 +36,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body className="font-sans min-h-screen">
         <header className="sticky top-0 z-50 bg-white border-b-2 border-accent">
-          <div className="max-w-5xl mx-auto px-6 py-2.5 flex items-center justify-between gap-4">
+          <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
             <a href="/" className="flex items-center">
-              <img src="/logo.png" alt="The Prewitt Group" className="h-9 w-auto block" />
+              <img src="/logo.png" alt="The Prewitt Group" className="h-12 w-auto block" />
             </a>
 
             {user && (
