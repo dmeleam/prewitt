@@ -6,10 +6,11 @@ function slugify(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 }
 
-export default async function HomePage({ searchParams }: { searchParams: { q?: string; category?: string } }) {
-  const q = searchParams.q ?? "";
-  const categorySlug = searchParams.category ?? "";
-  const supabase = createClient();
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ q?: string; category?: string }> }) {
+  const resolvedParams = await searchParams;
+  const q = resolvedParams.q ?? "";
+  const categorySlug = resolvedParams.category ?? "";
+  const supabase = await createClient();
 
   if (q) {
     const { data: procedures, error } = await supabase

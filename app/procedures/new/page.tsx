@@ -3,7 +3,7 @@ import { checkIsAdmin } from "@/lib/supabase/admin";
 import NewProcedureForm from "@/components/NewProcedureForm";
 
 export default async function NewProcedurePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const isAdmin = await checkIsAdmin(supabase);
 
   if (!isAdmin) {

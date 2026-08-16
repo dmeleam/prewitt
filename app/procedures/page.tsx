@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import ProcedureCard from "@/components/ProcedureCard";
 
 export default async function AllProceduresPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const { data: procedures, error } = await supabase
     .from("procedures")

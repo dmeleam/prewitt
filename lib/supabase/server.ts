@@ -8,8 +8,8 @@ type CookieToSet = { name: string; value: string; options?: any };
 
 // Used inside server components and route handlers — pages that fetch
 // data before the page ever reaches the browser.
-export function createClient() {
-  const cookieStore = cookies();
+export async function createClient() {
+  const cookieStore = await cookies();
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

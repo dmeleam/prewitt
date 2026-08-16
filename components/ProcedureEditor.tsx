@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactElement } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { IMAGE_LINE } from "@/lib/images";
@@ -28,7 +28,7 @@ type Props = {
 
 function renderBody(content: string, imageUrls: Record<string, string>) {
   const lines = content.split("\n");
-  const blocks: JSX.Element[] = [];
+  const blocks: ReactElement[] = [];
   let buffer: string[] = [];
   let key = 0;
 

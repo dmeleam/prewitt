@@ -3,7 +3,7 @@ import { checkIsAdmin } from "@/lib/supabase/admin";
 import AdminPanel from "@/components/AdminPanel";
 
 export default async function AdminPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const isAdmin = await checkIsAdmin(supabase);
 
   if (!isAdmin) {
