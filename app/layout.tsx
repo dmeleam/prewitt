@@ -15,8 +15,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Everything below is only fetched and rendered for signed-in users.
-  // Signed out, the page is just the header and the login form.
   const isAdmin = user ? await checkIsAdmin(supabase) : false;
 
   let categories: { id: string; name: string }[] = [];
@@ -37,19 +35,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body className="font-sans min-h-screen">
-        <header className="border-b-2 border-accent bg-gradient-to-r from-header-blue to-ink">
-          <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
-            <a href="/" className="font-display font-semibold text-xl text-paper tracking-tight">The Prewitt Group</a>
+        <header className="sticky top-0 z-50 bg-white border-b-2 border-accent">
+          <div className="max-w-5xl mx-auto px-6 py-2.5 flex items-center justify-between gap-4">
+            <a href="/" className="flex items-center">
+              <img src="/logo.png" alt="The Prewitt Group" className="h-9 w-auto block" />
+            </a>
 
             {user && (
               <div className="flex items-center gap-5">
                 {isAdmin && (
                   <>
-                    <a href="/procedures/new" className="text-sm text-ink bg-paper hover:bg-accent-soft rounded px-3 py-1.5 font-medium">+ Add procedure</a>
-                    <a href="/admin" className="text-sm text-paper/80 hover:text-paper">Admin</a>
+                    <a href="/procedures/new" className="text-sm text-white bg-accent hover:bg-accent-deep rounded px-3 py-1.5 font-medium">+ Add procedure</a>
+                    <a href="/admin" className="text-sm text-ink-soft hover:text-accent">Admin</a>
                   </>
                 )}
-                <span className="h-4 w-px bg-paper/25" aria-hidden="true" />
+                <span className="h-4 w-px bg-line" aria-hidden="true" />
                 <SignOutButton />
               </div>
             )}

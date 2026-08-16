@@ -3,15 +3,15 @@
 @tailwind utilities;
 
 body {
-  background-color: #f7f6f2;
-  color: #1b2430;
+  background-color: #FBFCFD;
+  color: #1A2430;
 }
 
 * {
-  border-color: #dcd9d0;
+  border-color: #DCE6EF;
 }
 
 :focus-visible {
-  outline: 2px solid #0f6e56;
+  outline: 2px solid #326195;
   outline-offset: 2px;
 }
