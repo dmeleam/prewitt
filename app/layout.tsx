@@ -35,6 +35,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en">
       <body className="font-sans min-h-screen">
+        <div className="brand-watermark" aria-hidden="true" />
         <header className="sticky top-0 z-50 bg-white border-b-2 border-accent">
           <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
             <a href="/" className="flex items-center">
