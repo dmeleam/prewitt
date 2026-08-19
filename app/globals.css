@@ -28,7 +28,7 @@ body {
   background-position: bottom right;
   opacity: 0.05;
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
 }
 
 @media (max-width: 880px) {

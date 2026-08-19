@@ -57,7 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
         </header>
 
-        <div className="max-w-5xl mx-auto md:flex md:items-start">
+        <div className="max-w-5xl mx-auto md:flex md:items-start relative z-10">
           {user && (
             <Suspense fallback={<div className="hidden md:block w-48 shrink-0" />}>
               <Sidebar categories={categories} counts={counts} totalCount={totalCount} />
